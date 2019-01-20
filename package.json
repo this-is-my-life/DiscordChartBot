@@ -1,0 +1,30 @@
+{
+  "name": "chartbot",
+  "version": "0.0.1",
+  "description": " const discordChartBot = \"Charts For Discord Servers\"; // Support En, Kr. 디스코드 서버를 위한 통계 차트! ",
+  "main": "ChartBot.js",
+  "scripts": {
+    "test": "node ChartBot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PMHStudio/DiscordChartBot.git"
+  },
+  "keywords": [
+    "Discord"
+  ],
+  "author": "PMH Studio / PMH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PMHStudio/DiscordChartBot/issues"
+  },
+  "homepage": "https://github.com/PMHStudio/DiscordChartBot#readme",
+  "devDependencies": {
+    "eslint": "^5.12.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}
