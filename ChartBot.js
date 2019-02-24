@@ -1,46 +1,53 @@
+/* eslint-disable no-console */
 /*
-    Welcome to The Discord ChartBot. | This is ChartBot Core Script.
-    const discordChartBot = 'Charts For Discord Servers' // Support En, Kr. 디스코드 서버를 위한 통계 차트! -Github Repo Description.
+  proj- Keep Typing and Nobody Explodes. The Discord Bot,
+
+  We Don't Like Close-Source. Email: pmhstudio.pmh@gmail.com
 */
 
-console.log('\n\nHello, Chart!')
+const discord = require('discord.js')
+const fs = require('fs')
+const superagent = require('superagent')
+let guildData
+superagent.get('https://api.jsonbin.io/b/5c723c9be064586e2ea3e347/latest').then((res) => {
+  guildData = res.body
+})
 
-const fileReadAPI = require('fs')
-const discordAPI = require('discord.js')
+const botToken = process.env.cbToken
+const bot = new discord.Client()
 
-const cb = new discordAPI.Client()
-const cbToken = process.env.cbToken
+bot.login(botToken)
+bot.commands = new discord.Collection()
 
-cb.login(cbToken)
-cb.commands = new discordAPI.Collection()
-
-fileReadAPI.readdir('./Charts', (err, files) => {
-  if (err) {
-    console.log(err)
-  }
-  let chartsFile = files.filter((f) => f.split('.').pop() === 'js')
-  chartsFile.forEach((f, i) => {
+fs.readdir('./Charts', (err, files) => {
+  if (err) { console.log(err) }
+  let moduleFile = files.filter((f) => f.split('.').pop() === 'js')
+  moduleFile.forEach((f) => {
     let props = require(`./Charts/${f}`)
-    let Commands = f.split('.')
-    let Command = Commands[0]
-    for (let aliasCount = props.alias.length; aliasCount >= 0; aliasCount--) {
-      cb.commands.set(props.alias[aliasCount])
+    for (let aliasCount = props.alias.length - 1; aliasCount >= 0; aliasCount--) {
+      bot.commands.set(props.alias[aliasCount], props)
+      console.log('Chart Loaded: ' + props.alias[aliasCount])
     }
-    console.log(`${Command} Chart Loaded!`)
   })
 })
 
-cb.on('ready', () => {
-  console.log('\n\nBooted--------------------')
+bot.on('ready', () => {
+  console.log(bot.user.username + ' is Booted!')
+  bot.user.setActivity("Dev | Type 'cb!messages' to Get Chart Url")
 })
 
-cb.on('message', (input) => {
-  if (!input.author.id === cb.user.id) {
-    if (!input.guild) { // ignore DM
-      input.reply('Oops! ChartBot is Server-Only.\n저런! 여기는 서버가 아닌거같은데요;;').then((thismsg) => thismsg.delete(2000))
-    } else {
-      // Main
-      input.channel.send(`Length: ${input.content.length}`)
-    }
+bot.on('message', (input) => {
+  if (input.author.id === bot.user.id) { return }
+  guildData[input.guild.id][input.author.id].MessageScore.TotalMessageCount++
+  guildData[input.guild.id][input.author.id].MessageScore.TotalMessageCharCount += input.content.length
+  superagent.put('https://api.jsonbin.io/b/5c723c9be064586e2ea3e347').send(guildData).catch((err) => console.log(err))
+
+  // Message Caculation.
+  let msgArray = input.content.split('!')
+  if (msgArray[0] === 'cb' && msgArray[1]) {
+    let msgWant = msgArray[1]
+    let msgRunFile = bot.commands.get(msgWant)
+    if (!msgRunFile) { return }
+    msgRunFile.run(bot, input)
   }
 })
