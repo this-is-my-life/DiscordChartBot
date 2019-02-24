@@ -38,8 +38,8 @@ bot.on('ready', () => {
 
 bot.on('message', (input) => {
   if (input.author.id === bot.user.id) { return }
-  guildData[input.guild.id][input.author.id].MessageScore.TotalMessageCount++
-  guildData[input.guild.id][input.author.id].MessageScore.TotalMessageCharCount += input.content.length
+  guildData[input.guild.name][input.author.tag].MessageScore.TotalMessageCount++
+  guildData[input.guild.name][input.author.tag].MessageScore.TotalMessageCharCount += input.content.length
   superagent.put('https://api.jsonbin.io/b/5c723c9be064586e2ea3e347').send(guildData).catch((err) => console.log(err))
 
   // Message Caculation.
