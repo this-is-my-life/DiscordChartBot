@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/PMHStudio/DiscordChartBot/issues"
   },
-  "homepage": "https://github.com/PMHStudio/DiscordChartBot#readme"
+  "homepage": "https://github.com/PMHStudio/DiscordChartBot#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "random-hex-color": "^1.0.1",
+    "superagent": "^5.0.2"
+  }
 }

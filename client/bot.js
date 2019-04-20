@@ -1,6 +1,7 @@
 const discord = require('discord.js')
 const bot = new discord.Client()
 const superagent = require('superagent')
+const randomHexColor = require('random-hex-color')
 
 let chartData
 superagent.get('https://api.myjson.com/bins/14qzec').then((response) => {
@@ -39,6 +40,7 @@ bot.on('message', (message) => {
       .setTitle('여기를 눌러 찻봇 통계 사이트로 이동합니다')
       .setURL('http://chartbot.kro.kr/?guild=' + guildId + '&channel=' + channelId + '&user=' + userId)
       .setDescription('사용법: cb!<서버ID>|<채널ID>|<유저ID>')
+      .setColor(randomHexColor())
     message.channel.send(urlEmb)
   }
 })
