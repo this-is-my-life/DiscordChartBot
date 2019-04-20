@@ -1,0 +1,19 @@
+{
+  "name": "proj-chartbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client/bot.js",
+  "scripts": {
+    "test": "node client/bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PMHStudio/DiscordChartBot.git"
+  },
+  "author": "PMH Studio / PMH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PMHStudio/DiscordChartBot/issues"
+  },
+  "homepage": "https://github.com/PMHStudio/DiscordChartBot#readme"
+}
