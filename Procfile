@@ -1,1 +1,1 @@
-worker: node ChartBot.js
+worker: node client/bot.js

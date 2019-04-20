@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>ChartBotAPI (Alpha)</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+      body {
+        background-color: #2C2F33;
+      }
+      #render {
+        margin: 5px;
+        color: #FFFFFF;
+      }
+      h4 {
+        color: #7289DA;
+      }
+    </style>
+  </head>
+  <body>
+      <div id="render">
+
+      </div>
+      <script>
+        let guild = getParameter('guild')
+        let channel = getParameter('channel')
+        let user = getParameter('user')
+
+        if (!guild || !channel || !user) {
+          alert('삐빅, 잘못된 접근!\n디스코드 찻봇을 통하여 이 사이트에 들어왔는지 확인하세요!')
+        } else {
+          let xhr = new XMLHttpRequest()
+          let target = 'https://api.myjson.com/bins/14qzec'
+          xhr.open('GET', target)
+          xhr.send()
+  
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status == 200) {
+                let chartData = JSON.parse(xhr.responseText)
+                let guildName = chartData.guilds[guild].name
+                let channelName = chartData.guilds[guild].channels[channel].name
+                let userName = chartData.guilds[guild].members[user].name
+                let serverInfo = '<h4>"' + guildName + '" 서버는...</h4><br />총 ' + chartData.guilds[guild].totalMessage + '개의 메세지가 작성되었습니다<br />총 ' + chartData.guilds[guild].totalLetter + '자의 메세지가 작성되었습니다<br />총 멤버는 ' + chartData.guilds[guild].users + '명입니다<br />평균 명당 ' + Math.floor(chartData.guilds[guild].totalMessage / chartData.guilds[guild].users) + '개의 메세지를 작성하였습니다<br />평균 명당 ' + Math.floor(chartData.guilds[guild].totalLetter / chartData.guilds[guild].users) + '자의 메세지를 작성하였습니다'
+                let channelInfo = '<h4>"' + channelName + '" 채널에서는...</h4><br />총 ' + chartData.guilds[guild].channels[channel].totalMessage + '개의 메세지가 작성되었습니다<br />총 ' + chartData.guilds[guild].channels[channel].totalLetter + '자의 메세지가 작성되었습니다'
+                let userInfo = '<h4>"' + userName + '" 유저는...</h4><br /><h5>' + guildName + ' 서버에서..</h5> 총 ' + chartData.guilds[guild].members[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].members[user].totalLetter + '자의 메세지가 작성되었습니다<h5><br />' + channelName + ' 채널에서..</h5>총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalLetter + '자의 메세지를 작성하였습니다'
+                document.getElementById('render').innerHTML += serverInfo + '<hr />' + channelInfo + '<hr />' + userInfo + '<hr />Copyright &copy; 2019. PMH Studio. MIT Licensed.'
+              }
+            }
+          }
+        }
+
+        function getParameter (param) {
+          let returnValue
+          let url = location.href
+          let parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&')
+          for (let i = 0; i < parameters.length; i++) {
+            let varName = parameters[i].split('=')[0]
+            if (varName.toUpperCase() === param.toUpperCase()) {
+              returnValue = parameters[i].split('=')[1]
+              return decodeURIComponent(returnValue)
+            }
+          }
+        }
+      </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
