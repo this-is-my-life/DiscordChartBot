@@ -19,6 +19,9 @@ bot.on('ready', () => {
 })
 
 bot.on('message', (message) => {
+  if (message.author.bot) {
+    return
+  }
   let length = message.content.length
   console.log(message.author.username + ' typed ' + length + ' letters.')
   chartData.guilds[message.guild.id].totalMessage++

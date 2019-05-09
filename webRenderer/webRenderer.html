@@ -8,7 +8,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
     <style>
       body {
         background-color: #2C2F33;
@@ -27,9 +28,11 @@
 
       </div>
       <script>
+        
         let guild = getParameter('guild')
         let channel = getParameter('channel')
         let user = getParameter('user')
+        let v = getParameter('v')
 
         if (!guild || !channel || !user) {
           alert('삐빅, 잘못된 접근!\n디스코드 찻봇을 통하여 이 사이트에 들어왔는지 확인하세요!')
@@ -43,13 +46,61 @@
             if (xhr.readyState === XMLHttpRequest.DONE) {
               if (xhr.status == 200) {
                 let chartData = JSON.parse(xhr.responseText)
-                let guildName = chartData.guilds[guild].name
-                let channelName = chartData.guilds[guild].channels[channel].name
-                let userName = chartData.guilds[guild].members[user].name
-                let serverInfo = '<h4>"' + guildName + '" 서버는...</h4><br />총 ' + chartData.guilds[guild].totalMessage + '개의 메세지가 작성되었습니다<br />총 ' + chartData.guilds[guild].totalLetter + '자의 메세지가 작성되었습니다<br />총 멤버는 ' + chartData.guilds[guild].users + '명입니다<br />평균 명당 ' + Math.floor(chartData.guilds[guild].totalMessage / chartData.guilds[guild].users) + '개의 메세지를 작성하였습니다<br />평균 명당 ' + Math.floor(chartData.guilds[guild].totalLetter / chartData.guilds[guild].users) + '자의 메세지를 작성하였습니다'
-                let channelInfo = '<h4>"' + channelName + '" 채널에서는...</h4><br />총 ' + chartData.guilds[guild].channels[channel].totalMessage + '개의 메세지가 작성되었습니다<br />총 ' + chartData.guilds[guild].channels[channel].totalLetter + '자의 메세지가 작성되었습니다'
-                let userInfo = '<h4>"' + userName + '" 유저는...</h4><br /><h5>' + guildName + ' 서버에서..</h5> 총 ' + chartData.guilds[guild].members[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].members[user].totalLetter + '자의 메세지가 작성되었습니다<h5><br />' + channelName + ' 채널에서..</h5>총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalLetter + '자의 메세지를 작성하였습니다'
-                document.getElementById('render').innerHTML += serverInfo + '<hr />' + channelInfo + '<hr />' + userInfo + '<hr />Copyright &copy; 2019. PMH Studio. MIT Licensed.'
+                if (!chartData.guilds[guild] || !chartData.guilds[guild].channels[channel] || !chartData.guilds[guild].members[user] || !chartData.guilds[guild].channels[channel].usersMessage[user]) {
+                  alert('삐빅, 잘못된 접근!\n서버, 채널에 차트봇이 없거나, 없는 사용자입니다')
+                } else {
+                  let guildName = chartData.guilds[guild].name
+                  let channelName = chartData.guilds[guild].channels[channel].name
+                  let userName = chartData.guilds[guild].members[user].name
+                  if (!parseInt(v) || parseInt(v) === 1) {
+                    let serverInfo = '<h4>"' + guildName + '" 서버는...</h4><br />총 ' + chartData.guilds[guild].totalMessage + '개의 메세지가 작성되었습니다<br />총 ' + chartData.guilds[guild].totalLetter + '자의 메세지가 작성되었습니다<br />총 멤버는 ' + chartData.guilds[guild].users + '명입니다<br />평균 명당 ' + Math.floor(chartData.guilds[guild].totalMessage / chartData.guilds[guild].users) + '개의 메세지를 작성하였습니다<br />평균 명당 ' + Math.floor(chartData.guilds[guild].totalLetter / chartData.guilds[guild].users) + '자의 메세지를 작성하였습니다'
+                    let channelInfo = '<h4>"' + channelName + '" 채널에서는...</h4><br />총 ' + chartData.guilds[guild].channels[channel].totalMessage + '개의 메세지가 작성되었습니다<br />총 ' + chartData.guilds[guild].channels[channel].totalLetter + '자의 메세지가 작성되었습니다'
+                    let userInfo = '<h4>"' + userName + '" 유저는...</h4><br /><h5>' + guildName + ' 서버에서..</h5> 총 ' + chartData.guilds[guild].members[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].members[user].totalLetter + '자의 메세지가 작성되었습니다<h5><br />' + channelName + ' 채널에서..</h5>총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalLetter + '자의 메세지를 작성하였습니다'
+                    document.getElementById('render').innerHTML += serverInfo + '<hr />' + channelInfo + '<hr />' + userInfo + '<hr />Copyright &copy; 2019. PMH Studio. MIT Licensed.'
+                  } else if (parseInt(v) === 2) {
+                    document.getElementById('render').innerHTML += '<h4>"' + guildName + '"의 메세지 통계</h4><canvas id="barChart"></canvas>'
+                    let barChartOption =  {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: '채널당 메세지수',
+                                data: [],
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }, {
+                                label: '채널당 총 메세지 글자수',
+                                data: [],
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    }
+
+                    // Bar Chart Caculating
+                  for (let eachIndex in chartData.guilds[guild].channels) {
+                    if (chartData.guilds[guild].channels[eachIndex].totalLetter > 0) {
+                      barChartOption.data.labels[barChartOption.data.labels.length] = chartData.guilds[guild].channels[eachIndex].name
+                      barChartOption.data.datasets[0].data[barChartOption.data.labels.length] = chartData.guilds[guild].channels[eachIndex].totalMessage
+                      barChartOption.data.datasets[1].data[barChartOption.data.labels.length] = chartData.guilds[guild].channels[eachIndex].totalLetter
+                    }
+                  }
+
+
+                    let barChart = new Chart(document.getElementById('barChart'), barChartOption)
+                  }
+                }
               }
             }
           }
@@ -73,5 +124,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
   </body>
 </html>
