@@ -41,7 +41,7 @@ bot.on('message', (message) => {
       .setAuthor(message.author.username, message.author.displayAvatarURL)
       .setThumbnail(message.guild.iconURL)
       .setTitle('여기를 눌러 찻봇 통계 사이트로 이동합니다')
-      .setURL('http://chartbot.kro.kr/?guild=' + guildId + '&channel=' + channelId + '&user=' + userId)
+      .setURL('http://chartbot.kro.kr/?guild=' + guildId + '&channel=' + channelId + '&user=' + userId + '&v=2')
       .setDescription('사용법: cb!<서버ID>|<채널ID>|<유저ID>')
       .setColor(randomHexColor())
     message.channel.send(urlEmb)
