@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
     <style>
       body {
-        background-color: #2C2F33;
+        background-color: #2C2F33
       }
       #render {
         margin: 5px;
@@ -24,6 +24,7 @@
     </style>
   </head>
   <body>
+      <button class="btn btn-dark" id="theme-btn" style="margin: 5px;" onclick="changeColor()">테마 변경</button>
       <div id="render">
 
       </div>
@@ -33,6 +34,7 @@
         let channel = getParameter('channel')
         let user = getParameter('user')
         let v = getParameter('v')
+        let colorCounter = Math.floor(Math.random() * 5)
 
         if (!guild || !channel || !user) {
           alert('삐빅, 잘못된 접근!\n디스코드 찻봇을 통하여 이 사이트에 들어왔는지 확인하세요!')
@@ -58,7 +60,9 @@
                     let userInfo = '<h4>"' + userName + '" 유저는...</h4><br /><h5>' + guildName + ' 서버에서..</h5> 총 ' + chartData.guilds[guild].members[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].members[user].totalLetter + '자의 메세지가 작성되었습니다<h5><br />' + channelName + ' 채널에서..</h5>총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalMessage + '개의 메세지를 작성하였습니다<br />총 ' + chartData.guilds[guild].channels[channel].usersMessage[user].totalLetter + '자의 메세지를 작성하였습니다'
                     document.getElementById('render').innerHTML += serverInfo + '<hr />' + channelInfo + '<hr />' + userInfo + '<hr />Copyright &copy; 2019. PMH Studio. MIT Licensed.'
                   } else if (parseInt(v) === 2) {
-                    document.getElementById('render').innerHTML += '<h4>"' + guildName + '"의 메세지 통계</h4><canvas id="barChart"></canvas>'
+
+                    // Bar Graph
+                    document.getElementById('render').innerHTML += '<h4>"' + guildName + '"의 채널 메세지 통계</h4><canvas id="barChart"></canvas><h4>' + guildName + '의 맴버 메세지 작성률</h4><canvas id="pieChart"></canvas>'
                     let barChartOption =  {
                         type: 'bar',
                         data: {
@@ -88,7 +92,6 @@
                         }
                     }
 
-                    // Bar Chart Caculating
                   for (let eachIndex in chartData.guilds[guild].channels) {
                     if (chartData.guilds[guild].channels[eachIndex].totalLetter > 0) {
                       barChartOption.data.labels[barChartOption.data.labels.length] = chartData.guilds[guild].channels[eachIndex].name
@@ -98,7 +101,35 @@
                   }
 
 
-                    let barChart = new Chart(document.getElementById('barChart'), barChartOption)
+                  let barChart = new Chart(document.getElementById('barChart'), barChartOption)
+
+                  // Pie Graph
+                    let pieChartOption =  {
+                      type: 'pie',
+                      data: {
+                        labels: [],
+                        datasets: [{
+                          label: '채널당 총 메세지 글자수',
+                          data: [],
+                          backgroundColor: [],
+                          borderColor: [],
+                          borderWidth: 1
+                        }]
+                      }
+                    }
+
+                  for (let eachIndex in chartData.guilds[guild].members) {
+                    if (chartData.guilds[guild].members[eachIndex].totalLetter > 0) {
+                      pieChartOption.data.labels[pieChartOption.data.labels.length] = chartData.guilds[guild].members[eachIndex].name
+                      pieChartOption.data.datasets[0].data[pieChartOption.data.labels.length] = chartData.guilds[guild].members[eachIndex].totalMessage
+                      pieChartOption.data.datasets[0].backgroundColor[pieChartOption.data.labels.length] = randomBackgroundColor()
+                      pieChartOption.data.datasets[0].borderColor[pieChartOption.data.labels.length] = randomBorderColor()
+                    }
+                  }
+
+                  console.log(pieChartOption)
+                  let pieChart = new Chart(document.getElementById('pieChart'), pieChartOption)
+
                   }
                 }
               }
@@ -118,6 +149,43 @@
             }
           }
         }
+
+        function randomBackgroundColor () {
+          let colors = [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)' ]
+          colorCounter++
+          if (colorCounter > colors.length - 1) {
+            colorCounter = 0
+          }
+          return colors[colorCounter]
+        }
+
+        function randomBorderColor () {
+          let colors = [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)' ]
+          return colors[colorCounter]
+        }
+
+        function changeColor () {
+          if (document.getElementsByTagName('body')[0].style.backgroundColor === 'rgb(255, 255, 255)') {
+            document.getElementById('theme-btn').classList.replace('btn-light', 'btn-dark')
+            document.getElementsByTagName('body')[0].style.backgroundColor = '#2C2F33'
+          } else {
+            document.getElementById('theme-btn').classList.replace('btn-dark', 'btn-light')
+            document.getElementsByTagName('body')[0].style.backgroundColor = '#fff'
+          }
+        }
+
       </script>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
